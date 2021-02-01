@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -10,31 +11,45 @@ namespace ChaosMod
     /// <summary>The mod entry point.</summary>
     public class ModEntry : Mod
     {
-        /*********
-        ** Public methods
-        *********/
-        /// <summary>The mod entry point, called after the mod is first loaded.</summary>
-        /// <param name="helper">Provides simplified APIs for writing mods.</param>
+        List<Action> effects = new List<Action>();
+
         public override void Entry(IModHelper helper)
         {
-            helper.Events.Input.ButtonPressed += this.OnButtonPressed;
+            effects.Add(RandomEffect);
+            helper.Events.GameLoop.UpdateTicked += this.OnUpdateTicked;
+        }
+
+        private void AddEffects()
+        {
+            effects.Add(HighSpeed);
+            effects.Add(LowSpeed);
         }
 
 
-        /*********
-        ** Private methods
-        *********/
-        /// <summary>Raised after the player presses a button on the keyboard, controller, or mouse.</summary>
-        /// <param name="sender">The event sender.</param>
-        /// <param name="e">The event data.</param>
-        private void OnButtonPressed(object sender, ButtonPressedEventArgs e)
+        private void OnUpdateTicked(object sender, UpdateTickedEventArgs e)
         {
-            // ignore if player hasn't loaded a save yet
-            if (!Context.IsWorldReady)
+            if (!Context.IsPlayerFree || !Context.IsWorldReady || Game1.paused
+                || Game1.activeClickableMenu != null)
                 return;
 
-            // print button presses to the console window
-            this.Monitor.Log($"{Game1.player.Name} pressed {e.Button}.", LogLevel.Debug);
+            RandomEffect();
+        }
+
+        static Random rnd = new Random();
+        private void RandomEffect()
+        {
+            int r = rnd.Next(effects.Count);
+            effects[r]();
+        }
+
+        private void HighSpeed()
+        {
+            Game1.player.addedSpeed = 10;
+        }
+
+        private void LowSpeed()
+        {
+            Game1.player.addedSpeed = 0.2;
         }
     }
 }

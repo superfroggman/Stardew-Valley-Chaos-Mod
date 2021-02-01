@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Chaos Mod",
+  "Author": "superfroggman",
+  "Version": "1.0.0",
+  "Description": "It's chaotic",
+  "UniqueID": "superfroggman.chaosMod",
+  "EntryDll": "chaosMod.dll",
+  "MinimumApiVersion": "3.0.0",
+  "UpdateKeys": []
+}
